@@ -239,9 +239,9 @@ func readFile(fileName string) string {
 	}
 	return content
 }
-/* func main() {
+func main() {
 	err := Perform(parseArgs(), os.Stdout)
 	if err != nil {
 		panic(err)
 	}
-} */
+} 
