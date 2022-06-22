@@ -1,4 +1,4 @@
-package main
+package mymain
 
 import (
 	"encoding/json"
@@ -15,6 +15,9 @@ const operation = "operation"
 const filename = "fileName"
 const item = "item"
 const id = "id"
+const flagError="-%s flag has to be specified"
+const defaults="specify operation"
+const opsError="Operation %s not allowed!"
 
 /* type items struct {
     Items []ItemO `json:"items"`
@@ -39,10 +42,10 @@ func isValidOps(ops string) bool {
 }
 
 func parseArgs() Arguments {
-	ops := flag.String(operation, "", "specify operation")
-	file := flag.String(filename, "", "specify filename")
-	it := flag.String(item, "", "specify item")
-	i := flag.String(id, "", "specify id")
+	ops := flag.String(operation, "", defaults)
+	file := flag.String(filename, "", defaults)
+	it := flag.String(item, "", defaults)
+	i := flag.String(id, "", defaults)
 
 	flag.Parse()
 	args := Arguments{
@@ -58,13 +61,13 @@ func parseArgs() Arguments {
 func Perform(args Arguments, writer io.Writer) error {
 	var errors []string
 	if args[operation] == ""{
-		return fmt.Errorf("-%s flag has to be specified", operation)
+		return fmt.Errorf(flagError, operation)
 	}else if !isValidOps(args[operation]){
-		return fmt.Errorf("Operation %s not allowed!", args[operation])
+		return fmt.Errorf(opsError, args[operation])
 	}
 
 	 if args[filename] == "" {
-		return fmt.Errorf("-%s flag has to be specified", filename)
+		return fmt.Errorf(flagError, filename)
 	}
 	/*
 		required := []string{operation, filename}
@@ -86,7 +89,7 @@ func Perform(args Arguments, writer io.Writer) error {
 
 	case "add":
 		if args[item] == "" {
-			errors = append(errors, fmt.Sprintf("-%s flag has to be specified", item))
+			errors = append(errors, fmt.Sprintf(flagError, item))
 		} else {
 		// create a new decoder
 		var itemList []ItemO
@@ -131,7 +134,7 @@ func Perform(args Arguments, writer io.Writer) error {
 		//check for id passed
 		var err error
 		if args[id] == "" {
-			errors = append(errors, fmt.Sprintf("-%s flag has to be specified", id))
+			errors = append(errors, fmt.Sprintf(flagError, id))
 		} else {
 			// create a new decoder
 			var itemList []ItemO
@@ -160,7 +163,7 @@ func Perform(args Arguments, writer io.Writer) error {
 		//check for id passed
 		var err error
 		if args[id] == "" {
-			errors = append(errors, fmt.Sprintf("-%s flag has to be specified", id))
+			errors = append(errors, fmt.Sprintf(flagError, id))
 		} else {
 			// create a new decoder
 			var itemList []ItemO
@@ -199,7 +202,7 @@ func Perform(args Arguments, writer io.Writer) error {
 			}
 		}
 	default:
-		errors = append(errors, fmt.Sprintf("Operation %s not allowed!", args[operation]))
+		errors = append(errors, fmt.Sprintf(opsError, args[operation]))
 	}
 	if v := strings.Join(errors, ""); len(v) > 0 {
 		return fmt.Errorf(v)
